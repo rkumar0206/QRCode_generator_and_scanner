@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QRCode_generator_and_scanner">
-        <activity android:name=".GeneratorActivty"></activity>
+        <activity android:name=".GeneratorActivity"></activity>
         <activity android:name=".ScannerActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

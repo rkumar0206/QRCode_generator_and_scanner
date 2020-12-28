@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             binding.generateBtn.id -> {
 
-                val intent = Intent(applicationContext, GeneratorActivty::class.java)
+                val intent = Intent(applicationContext, GeneratorActivity::class.java)
                 startActivity(intent)
             }
         }
