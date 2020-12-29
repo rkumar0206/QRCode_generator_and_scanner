@@ -1,8 +1,12 @@
 package com.rohitthebest.qrcode_generator_and_scanner
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -10,6 +14,8 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.Result
 import com.rohitthebest.qrcode_generator_and_scanner.databinding.ActivityScannerBinding
 import me.dm7.barcodescanner.zxing.ZXingScannerView
+
+private const val TAG = "ScannerActivity"
 
 class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
@@ -52,9 +58,63 @@ class ScannerActivity : AppCompatActivity(), ZXingScannerView.ResultHandler {
 
     override fun handleResult(p0: Result?) {
 
+
         if (p0 != null) {
 
-            Toast.makeText(this, "$p0", Toast.LENGTH_SHORT).show()
+            if (p0.text.toString().trim().startsWith("https://") ||
+                p0.text.toString().trim().startsWith("http://")
+            ) {
+
+                openLinkInBrowser(p0.toString().trim())
+
+            } else {
+
+                AlertDialog.Builder(this)
+                    .setTitle("Message")
+                    .setMessage(p0.text.toString().trim())
+                    .setPositiveButton("OK") { dialog, _ ->
+
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
+            }
+        }
+    }
+
+    private fun checkUrl(url: String): String {
+
+        var urll = ""
+        try {
+            if (url.startsWith("https://") || url.startsWith("http://")) {
+                urll = url
+            } else if (url.isNotEmpty()) {
+                urll = "https://www.google.com/search?q=$url"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return urll
+
+    }
+
+    private fun openLinkInBrowser(url: String?) {
+
+        if (CheckNetworkConnection().isInternetAvailable(this)) {
+            url?.let {
+
+                try {
+                    Log.d(TAG, "Loading Url in default browser.")
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(checkUrl(it)))
+                    this.startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(this, "${e.message}", Toast.LENGTH_LONG).show()
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            Toast.makeText(this, "Please connect to internet", Toast.LENGTH_SHORT).show()
         }
     }
 
